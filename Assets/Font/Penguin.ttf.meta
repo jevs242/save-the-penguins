@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: fc408a2d4e0066b40a1b9e2829d39694
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - Penguin
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: b10a24ab99685504abf7f84ee755c32b, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
