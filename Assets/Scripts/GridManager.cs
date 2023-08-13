@@ -17,11 +17,6 @@ public class GridManager : MonoBehaviour
         _grid = GameObject.Find("Grid");
     }
 
-    public void DestroyGrid()
-    {
-        //Destroy(_grid.gameObject);
-    }
-
     public void RestartGrid()
     {
         _grid = Instantiate(_gridPrefabs, _beginTransform);

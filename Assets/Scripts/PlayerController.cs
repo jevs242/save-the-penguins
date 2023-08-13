@@ -51,6 +51,11 @@ public class PlayerController : MonoBehaviour
 
 	private void Update()
 	{
+		UIManager.instance.UpdateStateMove();
+
+		animator.SetFloat("Speed" ,agent.velocity.magnitude);
+		if (UIManager.instance.pauseScreen.activeSelf || UIManager.instance.beginScreem.activeSelf)
+			return;
 
 		// Check if the left mouse button is pressed
 		if (Input.GetMouseButtonDown(0) && !_dead && _canMove)
@@ -66,16 +71,14 @@ public class PlayerController : MonoBehaviour
 
 				if (Vector3.Distance(pinguin.transform.position, hit.transform.position) <= _distanceAccepted && Vector3.Distance(pinguin.transform.position, hit.transform.position) != 0 && hit.collider.CompareTag("Hexa") && Vector3.Distance(pinguin.transform.position, hit.transform.position) >= 0.5f)
 				{
-					destination = hit.transform;
+					destination = hit.transform.parent.transform;
 					DestroyIceController.instance.PlayerMove(pinguin.transform.position);
-					//pinguin.transform.position = hit.transform.position;
 					
-					agent.destination = hit.transform.position;
+					agent.destination = hit.transform.parent.transform.position;
 					_canMove = false;
 					SoundManager.instance.PlaySFX(1, 2 , 0.1f);
-					UIManager.instance.UpdateUI();
 
-					StartCoroutine(DelayToNextMove(hit.transform.position));
+					StartCoroutine(DelayToNextMove(hit.transform.parent.transform.position));
 				}
 			}
 			
@@ -88,14 +91,12 @@ public class PlayerController : MonoBehaviour
 			agent.enabled = false;
 		}
 
-		animator.SetFloat("Speed" ,agent.velocity.magnitude);
 	}
 
 	IEnumerator DelayToNextMove(Vector3 PinguinLocation)
 	{
-		yield return new WaitForSeconds(2);
+		yield return new WaitForSeconds(1.5f);
 		_canMove = true;
-		UIManager.instance.UpdateUI();
 
 		CheckIfDone(PinguinLocation);
 	}
