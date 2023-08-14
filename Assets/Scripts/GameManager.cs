@@ -4,37 +4,42 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager instance; 
+    public static GameManager Instance;
 
-    public int pinguinsSave { get { return _pinguinsSave; } set { _pinguinsSave = value; } }
-    private int _pinguinsSave;
+	private GameObject penguin;
 
-	public int pinguinsDead { get { return _pinguinsDead; } set { _pinguinsDead = value; } }
-    private int _pinguinsDead;
+    public int PenguinsSave { get { return penguinsSave; } set { penguinsSave = value; } }
+    private int penguinsSave;
 
-	public bool beginPlay { get { return _beginPlay; } set { _beginPlay = value; } }
-	private bool _beginPlay;
+	public int PenguinsDead { get { return penguinsDead; } set { penguinsDead = value; } }
+    private int penguinsDead;
+
+	public bool BeginPlay { get { return beginPlay; } set { beginPlay = value; } }
+	private bool beginPlay;
+
+	public int LimitPoints { get { return limitPoints; } }
+	[SerializeField] private int limitPoints;
+
+	public bool EndGame { get { return endGame; } set { endGame = value; } }
+	private bool endGame;
 
 	private void Awake()
 	{
-		instance = this;
+		Instance = this;
 	}
 
-	// Start is called before the first frame update
-	void Start()
-    {
-        //Time.timeScale = 0;
-	}
-
-	// Update is called once per frame
-	void Update()
-    {
-        
-    }
-
-
-	public void SetPause()
+	private void Start()
 	{
+		penguin = GameObject.Find("Penguin");
+	}
 
+	public void CheckGame()
+	{
+		if (penguinsDead >= limitPoints || penguinsSave >= limitPoints)
+		{
+			EndGame = true;
+			UIManager.Instance.EndGame(penguinsSave >= limitPoints);
+			penguin.SetActive(false);
+		}
 	}
 }

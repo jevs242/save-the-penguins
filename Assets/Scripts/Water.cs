@@ -4,29 +4,17 @@ using UnityEngine;
 
 public class Water : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
 	private void OnTriggerEnter(Collider other)
 	{
-        GameManager gm = GameManager.instance;
-        PlayerController pc = PlayerController.instance;
+        GameManager gm = GameManager.Instance;
+        PlayerController pc = PlayerController.Instance;
 
-		if(other.CompareTag("Player") && !pc.dead)
+		if(other.CompareTag("Player") && !pc.Dead)
         {
-            gm.pinguinsDead++;
-            pc.dead = true;
-			SoundManager.instance.PlaySFX(3, 0.5f , 1);
-            UIManager.instance.UpdateUI();
+            gm.PenguinsDead++;
+            pc.Dead = true;
+			SoundManager.Instance.PlaySFX(3, 0.5f , 1);
+            UIManager.Instance.UpdateUI();
 			StartCoroutine(RestartGame());
         }
 	}
@@ -34,7 +22,8 @@ public class Water : MonoBehaviour
     private IEnumerator RestartGame()
     {
         yield return new WaitForSeconds(2);
-        DestroyIceController.instance.RestartGrid();
-        PlayerController.instance.RestartPinguin();
+		GameManager.Instance.CheckGame();
+		DestroyIceController.Instance.RestartGrid();
+        PlayerController.Instance.RestartPenguin();
     }
 }

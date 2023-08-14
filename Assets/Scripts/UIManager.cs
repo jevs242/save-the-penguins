@@ -3,35 +3,34 @@ using System.Collections.Generic;
 using System.Drawing;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 
 public class UIManager : MonoBehaviour
 {
-    public static UIManager instance;  
-    [SerializeField] private Text _howManySave;
-	[SerializeField] private Text _howManyDead;
-    [SerializeField] private Image _canMove;
+    public static UIManager Instance;  
+    [SerializeField] private Text howManySave;
+	[SerializeField] private Text howManyDead;
+    [SerializeField] private Image canMove;
 
-    public GameObject pauseScreen { get { return _pauseScreen; }}
-    [SerializeField] private GameObject _pauseScreen;
+    public GameObject PauseScreen { get { return pauseScreen; }}
+    [SerializeField] private GameObject pauseScreen;
 
-    public GameObject beginScreem { get { return _beginScreen; }}
-	[SerializeField] private GameObject _beginScreen;
-	[SerializeField] private GameObject _hudScreen;
+    public GameObject BeginScreem { get { return beginScreen; }}
+	[SerializeField] private GameObject beginScreen;
+	[SerializeField] private GameObject hudScreen;
+
+    [SerializeField] private GameObject endGameScreen;
+    [SerializeField] private Text endOrWin;
+    [SerializeField] private Sprite[] stopPlayButton;
 
 
 
 	private void Awake()
 	{
-		instance = this;
+		Instance = this;
 	}
-
-	// Start is called before the first frame update
-	void Start()
-    {
-        
-    }
 
     // Update is called once per frame
     void Update()
@@ -44,29 +43,41 @@ public class UIManager : MonoBehaviour
 
     public void UpdateUI()
     {
-        _howManySave.text = GameManager.instance.pinguinsSave.ToString("00");
-        _howManyDead.text = GameManager.instance.pinguinsDead.ToString("00");
+        howManySave.text = GameManager.Instance.PenguinsSave.ToString("00");
+        howManyDead.text = GameManager.Instance.PenguinsDead.ToString("00");
     }
 
     public void UpdateStateMove()
     {
-		_canMove.color = PlayerController.instance.canMove ? UnityEngine.Color.green : UnityEngine.Color.red;
+		canMove.sprite = PlayerController.Instance.CanMove ? stopPlayButton[1] : stopPlayButton[0];
 	}
 
 	public void SetPause()
     {
-        if (_beginScreen.activeSelf)
+        if (beginScreen.activeSelf)
             return;
 
-        _hudScreen.SetActive(_pauseScreen.activeSelf);
-        _pauseScreen.SetActive(_pauseScreen.activeSelf ? false : true);
+        hudScreen.SetActive(pauseScreen.activeSelf);
+        pauseScreen.SetActive(!pauseScreen.activeSelf);
     }
 
     public void BeginPlay()
     {
-        _beginScreen.SetActive(false);
-        _hudScreen.SetActive(true);
-        GameManager.instance.beginPlay = true;
+        beginScreen.SetActive(false);
+        hudScreen.SetActive(true);
+        GameManager.Instance.BeginPlay = true;
+    }
+
+    public void EndGame(bool win)
+    {
+        endGameScreen.SetActive(true);
+        hudScreen.SetActive(false);
+        endOrWin.text = win ? "YOU SAVED THE PENGUINS!" : "YOU LET PENGUINS DIE!";
+    }
+
+    public void PlayAgain()
+    {
+        SceneManager.LoadScene("PenguinsMap");
     }
     
 }

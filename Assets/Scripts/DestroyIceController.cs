@@ -7,70 +7,64 @@ using UnityEngine.EventSystems;
 
 public class DestroyIceController : MonoBehaviour
 {
-    [SerializeField]private GameObject _grid;
-	[SerializeField]private GameObject _iceFbx;
-	[SerializeField]private List<GameObject> _hexa;
+    public static DestroyIceController Instance;
 
-    public static DestroyIceController instance;
+    [SerializeField]private GameObject grid;
+	[SerializeField]private GameObject iceFbx;
+	[SerializeField]private List<GameObject> hexa;
 
 	private void Awake()
 	{
-		instance = this;
+		Instance = this;
 	}
 
 	// Start is called before the first frame update
 	void Start()
     {
-		foreach (Transform hex in _grid.transform.GetComponentInChildren<Transform>())
+		foreach (Transform hex in grid.transform.GetComponentInChildren<Transform>())
 		{
-			_hexa.Add(hex.gameObject);
+			hexa.Add(hex.gameObject);
 		}
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
     }
 
     public void RestartGrid()
     {
-        foreach(GameObject hex in _hexa)
+        foreach(GameObject hex in hexa)
         {
             hex.gameObject.SetActive(true);
         }
 	}
 
-    public void PlayerMove(Vector3 PinguinLocation)
+    public void PlayerMove(Vector3 PenguinLocation)
 	{
         int count = 0;
         while(true)
         {
-            int random = Random.Range(0, _hexa.Count);
+            int random = Random.Range(0, hexa.Count);
 
-            if(Vector3.Distance(PinguinLocation, _hexa[random].transform.position) <= PlayerController.instance.distanceAccepted && Vector3.Distance(PinguinLocation, _hexa[random].transform.position) >= 0.5f &&
-                _hexa[random].gameObject.activeSelf == true)
+            if(Vector3.Distance(PenguinLocation, hexa[random].transform.position) <= PlayerController.Instance.DistanceAccepted && Vector3.Distance(PenguinLocation, hexa[random].transform.position) >= 0.5f &&
+                hexa[random].gameObject.activeSelf == true)
             {
-                _hexa[random].gameObject.SetActive(false);
-                SoundManager.instance.PlaySFX(0 , 1 , 1);
-                Instantiate(_iceFbx, _hexa[random].transform.position, Quaternion.identity);
+                hexa[random].gameObject.SetActive(false);
+                SoundManager.Instance.PlaySFX(0 , 1 , 1);
+                Instantiate(iceFbx, hexa[random].transform.position, Quaternion.identity);
                 break;
             }
 
-            if(count >= _hexa.Count * 2)
+            if(count >= hexa.Count * 2)
             {
                 
-                for(int i = 0; i < _hexa.Count; i++)
+                for(int i = 0; i < hexa.Count; i++)
                 {
-                    if (_hexa[i].transform.position == PinguinLocation)
+                    if (hexa[i].transform.position == PenguinLocation)
                     {
-						_hexa[random].gameObject.SetActive(false);
-						SoundManager.instance.PlaySFX(0, 1 , 1);
+						hexa[random].gameObject.SetActive(false);
+						SoundManager.Instance.PlaySFX(0, 1 , 1);
 					}
 				}
                 break;
             }
             count++;
 		}
-
 	}
 }
