@@ -19,6 +19,9 @@ public class PlayerController : MonoBehaviour
 	public bool CanMove { get { return canMove; } }
 	private bool canMove = true;
 
+	public bool FirstPlay { get { return firstPlay; } set { firstPlay = value; } }
+	private bool firstPlay = true;
+
 	[SerializeField] private Transform[] leftIce;
 	[SerializeField] private Transform[] rightIce;
 	[SerializeField] private Transform[] forwardIce;
@@ -58,14 +61,15 @@ public class PlayerController : MonoBehaviour
 		if (Input.GetMouseButtonDown(0) && !dead && canMove)
 		{
 			Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+			RaycastHit hit;
 
-			if (Physics.Raycast(ray, out RaycastHit hit))
+			if (Physics.Raycast(ray, out  hit))
 			{
 
 				if (Vector3.Distance(penguin.transform.position, hit.transform.position) <= distanceAccepted && Vector3.Distance(penguin.transform.position, hit.transform.position) != 0 && hit.collider.CompareTag("Hexa") && Vector3.Distance(penguin.transform.position, hit.transform.position) >= 0.5f)
 				{
-					DestroyIceController.Instance.PlayerMove(penguin.transform.position);
-					
+					DestroyIceController.Instance.NewPlayerMove(hit.transform.parent.transform.position);
+
 					agent.destination = hit.transform.parent.transform.position;
 					canMove = false;
 					SoundManager.Instance.PlaySFX(1, 2 , 0.1f);
@@ -84,7 +88,7 @@ public class PlayerController : MonoBehaviour
 
 	IEnumerator DelayToNextMove(Vector3 PenguinLocation)
 	{
-		yield return new WaitForSeconds(1.5f);
+		yield return new WaitForSeconds(1);
 		canMove = true;
 		CheckIfDone(PenguinLocation);
 	}
@@ -155,6 +159,7 @@ public class PlayerController : MonoBehaviour
 
 	private IEnumerator RestartGame()
 	{
+		DestroyIceController.Instance.Show();
 		SoundManager.Instance.PlaySFX(2, 1, 1);
 		yield return new WaitForSeconds(2);
 		agent.enabled = false;
@@ -166,6 +171,7 @@ public class PlayerController : MonoBehaviour
 
 	public void RestartPenguin()
 	{
+		firstPlay = true;
 		begin = false;
 		transform.SetPositionAndRotation(_begiPosition, _beginRotation);
 		if(penguin.activeSelf)

@@ -21,7 +21,8 @@ public class Water : MonoBehaviour
 
     private IEnumerator RestartGame()
     {
-        yield return new WaitForSeconds(2);
+        DestroyIceController.Instance.Show();
+		yield return new WaitForSeconds(2);
 		GameManager.Instance.CheckGame();
 		DestroyIceController.Instance.RestartGrid();
         PlayerController.Instance.RestartPenguin();

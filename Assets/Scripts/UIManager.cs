@@ -25,6 +25,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Text endOrWin;
     [SerializeField] private Sprite[] stopPlayButton;
 
+	[SerializeField] private Text[] limitTotal;
 
 
 	private void Awake()
@@ -32,8 +33,14 @@ public class UIManager : MonoBehaviour
 		Instance = this;
 	}
 
-    // Update is called once per frame
-    void Update()
+	private void Start()
+	{
+        limitTotal[0].text = GameManager.Instance.LimitPoints.ToString("00");
+		limitTotal[1].text = GameManager.Instance.LimitPoints.ToString("00");
+	}
+
+	// Update is called once per frame
+	void Update()
     {
         if(Input.GetKeyUp(KeyCode.Escape))
         {

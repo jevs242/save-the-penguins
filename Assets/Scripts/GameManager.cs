@@ -23,6 +23,9 @@ public class GameManager : MonoBehaviour
 	public bool EndGame { get { return endGame; } set { endGame = value; } }
 	private bool endGame;
 
+	[SerializeField] private int howManyBroken = 60;
+	public int HowManyBroken { get { return howManyBroken; } }
+
 	private void Awake()
 	{
 		Instance = this;
