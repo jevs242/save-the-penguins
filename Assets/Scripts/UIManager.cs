@@ -24,8 +24,12 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject endGameScreen;
     [SerializeField] private Text endOrWin;
     [SerializeField] private Sprite[] stopPlayButton;
-
+    [SerializeField] private Sprite[] winOrLoseImages;
+    [SerializeField] private Image winOrLoseImage;
 	[SerializeField] private Text[] limitTotal;
+    [SerializeField] private Sprite[] muteOrNot;
+	[SerializeField] private Image musicIcon;
+
 
 
 	private void Awake()
@@ -80,11 +84,24 @@ public class UIManager : MonoBehaviour
         endGameScreen.SetActive(true);
         hudScreen.SetActive(false);
         endOrWin.text = win ? "YOU SAVED THE PENGUINS!" : "YOU LET PENGUINS DIE!";
+        winOrLoseImage.sprite = win ? winOrLoseImages[0] : winOrLoseImages[1];
     }
 
     public void PlayAgain()
     {
         SceneManager.LoadScene("PenguinsMap");
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
+
+    public void ChangeVolumeOfMusic(Slider sliderMusic)
+    {
+        SoundManager.Instance.MusicSource.volume = sliderMusic.value;
+
+        musicIcon.sprite = sliderMusic.value == 0 ? muteOrNot[0] : muteOrNot[1];
     }
     
 }

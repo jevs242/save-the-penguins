@@ -6,9 +6,10 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-	private GameObject penguin;
+	[SerializeField] private GameObject penguin;
 
-    public int PenguinsSave { get { return penguinsSave; } set { penguinsSave = value; } }
+
+	public int PenguinsSave { get { return penguinsSave; } set { penguinsSave = value; } }
     private int penguinsSave;
 
 	public int PenguinsDead { get { return penguinsDead; } set { penguinsDead = value; } }
@@ -33,7 +34,6 @@ public class GameManager : MonoBehaviour
 
 	private void Start()
 	{
-		penguin = GameObject.Find("Penguin");
 	}
 
 	public void CheckGame()
@@ -42,6 +42,16 @@ public class GameManager : MonoBehaviour
 		{
 			EndGame = true;
 			UIManager.Instance.EndGame(penguinsSave >= limitPoints);
+
+			if (penguinsSave >= limitPoints)
+			{
+				SoundManager.Instance.PlaySFX(4 , 1 , 1);
+			}
+			else
+			{
+				SoundManager.Instance.PlaySFX(5, 1, 1);
+			}
+
 			penguin.SetActive(false);
 		}
 	}

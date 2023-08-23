@@ -13,7 +13,7 @@ public class Water : MonoBehaviour
         {
             gm.PenguinsDead++;
             pc.Dead = true;
-			SoundManager.Instance.PlaySFX(3, 0.5f , 1);
+			SoundManager.Instance.PlaySFX(3, 1 , 1);
             UIManager.Instance.UpdateUI();
 			StartCoroutine(RestartGame());
         }
@@ -22,7 +22,7 @@ public class Water : MonoBehaviour
     private IEnumerator RestartGame()
     {
         DestroyIceController.Instance.Show();
-		yield return new WaitForSeconds(2);
+		yield return new WaitForSeconds(5);
 		GameManager.Instance.CheckGame();
 		DestroyIceController.Instance.RestartGrid();
         PlayerController.Instance.RestartPenguin();

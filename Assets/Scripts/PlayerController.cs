@@ -7,7 +7,7 @@ public class PlayerController : MonoBehaviour
 {
 	public static PlayerController Instance;
 	private Camera mainCamera;
-	private GameObject penguin;
+	[SerializeField]private GameObject penguin;
 	private NavMeshAgent agent;
 
 	public float DistanceAccepted { get { return distanceAccepted; } }
@@ -16,7 +16,7 @@ public class PlayerController : MonoBehaviour
 	private Animator animator;
 	private bool begin;
 
-	public bool CanMove { get { return canMove; } }
+	public bool CanMove { get { return canMove; } set { canMove = value; } }
 	private bool canMove = true;
 
 	public bool FirstPlay { get { return firstPlay; } set { firstPlay = value; } }
@@ -28,8 +28,12 @@ public class PlayerController : MonoBehaviour
 	[SerializeField] private Transform[] backIce;
 	[SerializeField] private Transform[] destinationToEnd;
 
-	private Vector3 _begiPosition;
-	private Quaternion _beginRotation;
+	[SerializeField] private GameObject redflag;
+	public GameObject SnowBallFBX { get { return snowBallFBX; } }
+	[SerializeField] private GameObject snowBallFBX;
+
+	private Vector3 begiPosition;
+	private Quaternion beginRotation;
 
 	public bool Dead { get { return dead; } set { dead = value; } }
 	private bool dead;
@@ -43,10 +47,10 @@ public class PlayerController : MonoBehaviour
 
 	private void Start()
 	{
-		_begiPosition = transform.position;
-		_beginRotation = transform.rotation;
-		mainCamera = Camera.main;
 		penguin = GameObject.Find("Penguin");
+		begiPosition = transform.position;
+		beginRotation = transform.rotation;
+		mainCamera = Camera.main;
 		UIManager.Instance.UpdateUI();
 	}
 
@@ -58,12 +62,55 @@ public class PlayerController : MonoBehaviour
 		if (UIManager.Instance.PauseScreen.activeSelf || UIManager.Instance.BeginScreem.activeSelf || GameManager.Instance.EndGame)
 			return;
 
+		PlayerMove();
+
+		if(Input.GetMouseButtonDown(1) && !dead && canMove)
+		{
+			Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+			RaycastHit hit;
+			if (Physics.Raycast(ray, out hit))
+			{
+				if (Vector3.Distance(penguin.transform.position, hit.transform.position) <= distanceAccepted && Vector3.Distance(penguin.transform.position, hit.transform.position) != 0 && hit.collider.CompareTag("Hexa") && Vector3.Distance(penguin.transform.position, hit.transform.position) >= 0.5f)
+				{
+					Hex hex = hit.transform.gameObject.GetComponentInParent<Hex>();
+
+					if(!hex.InfoHowManyNear.gameObject.activeSelf)
+					{
+						if(redflag)
+						{
+							if(!hex.HasFlag)
+							{
+								GameObject ball = Instantiate(redflag, hit.collider.transform.position + new Vector3(0,250), Quaternion.identity);
+								hex.Ball = ball.GetComponent<SnowBall>();
+								hex.HasFlag = true;
+							}
+							else
+							{
+								hex.HasFlag = false;
+
+								if (hex.Ball != null)
+								{
+									Instantiate(snowBallFBX, hex.Ball.transform.position, Quaternion.identity);
+									Destroy(hex.Ball.gameObject);
+								}
+							}
+						}
+					}
+
+				}
+			}
+		}
+
+	}
+
+	private void PlayerMove()
+	{
 		if (Input.GetMouseButtonDown(0) && !dead && canMove)
 		{
 			Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
 			RaycastHit hit;
 
-			if (Physics.Raycast(ray, out  hit))
+			if (Physics.Raycast(ray, out hit))
 			{
 
 				if (Vector3.Distance(penguin.transform.position, hit.transform.position) <= distanceAccepted && Vector3.Distance(penguin.transform.position, hit.transform.position) != 0 && hit.collider.CompareTag("Hexa") && Vector3.Distance(penguin.transform.position, hit.transform.position) >= 0.5f)
@@ -72,14 +119,14 @@ public class PlayerController : MonoBehaviour
 
 					agent.destination = hit.transform.parent.transform.position;
 					canMove = false;
-					SoundManager.Instance.PlaySFX(1, 2 , 0.1f);
+					SoundManager.Instance.PlaySFX(1, 2, 1f);
 
 					StartCoroutine(DelayToNextMove(hit.transform.parent.transform.position));
 				}
 			}
 			begin = true;
 		}
-		if(!RayCastFloor() && begin)
+		if (!RayCastFloor() && begin)
 		{
 			transform.position += Physics.gravity * Time.deltaTime;
 			agent.enabled = false;
@@ -89,7 +136,10 @@ public class PlayerController : MonoBehaviour
 	IEnumerator DelayToNextMove(Vector3 PenguinLocation)
 	{
 		yield return new WaitForSeconds(1);
-		canMove = true;
+		if(!dead)
+		{
+			canMove = true;
+		}
 		CheckIfDone(PenguinLocation);
 	}
 
@@ -161,7 +211,7 @@ public class PlayerController : MonoBehaviour
 	{
 		DestroyIceController.Instance.Show();
 		SoundManager.Instance.PlaySFX(2, 1, 1);
-		yield return new WaitForSeconds(2);
+		yield return new WaitForSeconds(5);
 		agent.enabled = false;
 		GameManager.Instance.CheckGame();
 		UIManager.Instance.UpdateUI();
@@ -173,7 +223,7 @@ public class PlayerController : MonoBehaviour
 	{
 		firstPlay = true;
 		begin = false;
-		transform.SetPositionAndRotation(_begiPosition, _beginRotation);
+		transform.SetPositionAndRotation(begiPosition, beginRotation);
 		if(penguin.activeSelf)
 			StartCoroutine(RefreshAgent());
 	}

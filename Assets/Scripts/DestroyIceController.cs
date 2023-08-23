@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.AI.Navigation;
@@ -11,6 +12,7 @@ public class DestroyIceController : MonoBehaviour
     public static DestroyIceController Instance;
 
     [SerializeField]private GameObject grid;
+    public GameObject IceFbx { get {return iceFbx; } }
 	[SerializeField]private GameObject iceFbx;
 	[SerializeField]private List<GameObject> hexa;
 
@@ -33,29 +35,31 @@ public class DestroyIceController : MonoBehaviour
 
     public void RestartGrid()
     {
+        StopAllCoroutines();
         foreach(GameObject hex in hexa)
         {
             hex.gameObject.SetActive(true);
 
 			hex.GetComponent<Hex>().ResetGame();
         }
+		PlayerController.Instance.CanMove = true;
 		NewMethodPlay();
 
 	}
 
 	public void PlayerMove(Vector3 PenguinLocation)
 	{
-        int count = 0;
+
+		int count = 0;
         while(true)
         {
-            int random = Random.Range(0, hexa.Count);
+            int random = UnityEngine.Random.Range(0, hexa.Count);
 
             if(Vector3.Distance(PenguinLocation, hexa[random].transform.position) <= PlayerController.Instance.DistanceAccepted && Vector3.Distance(PenguinLocation, hexa[random].transform.position) >= 0.5f &&
                 hexa[random].gameObject.activeSelf == true)
             {
-                hexa[random].gameObject.SetActive(false);
-                SoundManager.Instance.PlaySFX(0 , 1 , 1);
                 Instantiate(iceFbx, hexa[random].transform.position, Quaternion.identity);
+                hexa[random].gameObject.SetActive(false);
                 break;
             }
 
@@ -67,7 +71,7 @@ public class DestroyIceController : MonoBehaviour
                     if (hexa[i].transform.position == PenguinLocation)
                     {
 						hexa[random].gameObject.SetActive(false);
-						SoundManager.Instance.PlaySFX(0, 1 , 1);
+						Instantiate(iceFbx, hexa[random].transform.position, Quaternion.identity);
 					}
 				}
                 break;
@@ -100,9 +104,22 @@ public class DestroyIceController : MonoBehaviour
             Hexa.IsBroken = false;
             Hexa.ResetUIHex();
             PlayerController.Instance.FirstPlay = false;
+			if (Hexa.Ball != null)
+			{
+				Instantiate(PlayerController.Instance.SnowBallFBX, Hexa.Ball.transform.position, Quaternion.identity);
+				Destroy(Hexa.Ball.gameObject);
+			}
+			FixZeros(Hexa);
+            HowManyNear(false);
 		}
 		else
         {
+			if (Hexa.Ball != null)
+            {
+				Instantiate(PlayerController.Instance.SnowBallFBX, Hexa.Ball.transform.position, Quaternion.identity);
+				Destroy(Hexa.Ball.gameObject);
+            }
+
 			if (Hexa.IsBroken)
 			{
 				Hexa.gameObject.SetActive(false);
@@ -141,7 +158,7 @@ public class DestroyIceController : MonoBehaviour
             foreach(GameObject hex in hexa)
             {
                 Hex h = hex.GetComponent<Hex>();
-                if(Random.Range(0 , 10) == 0 && !h.IsBeginHex)
+                if(UnityEngine.Random.Range(0 , 10) == 0 && !h.IsBeginHex)
                 {
                     h.IsBroken = true;
 					h.InfoHowManyNear.color = Color.red;
@@ -221,12 +238,37 @@ public class DestroyIceController : MonoBehaviour
     	}
 
 	}
+
+    void FixZeros(Hex FirstMove)
+    {
+        foreach(GameObject hex in hexa)
+        {
+			Hex hexa = hex.GetComponent<Hex>();
+            if (hexa == FirstMove)
+                continue;
+
+			if (hexa.HowManyNearBroken == 0)
+			{
+				hexa.HowManyNearBroken++;
+				hexa.IsBroken = true;
+				hexa.ResetUIHex();
+				HowManyNear(false);
+			}
+		}
+    }
     public void Show()
+    {
+		PlayerController.Instance.CanMove = false;
+        StartCoroutine(ShowDelay());
+    }
+
+    private IEnumerator ShowDelay()
     {
 	    foreach (GameObject hex in hexa)
 	    {
-		    hex.GetComponent<Hex>().Show();
-	    }
-    }
+			hex.GetComponent<Hex>().Show();
+	        yield return new WaitForSeconds(0.05f);
+        }
+    }    
 }
 

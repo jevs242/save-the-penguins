@@ -20,11 +20,18 @@ public class Hex : MonoBehaviour
     [SerializeField] private int howManyLimit = 6;
     public int HowManyLimit { get { return howManyLimit; }}
 
+    public bool HasFlag { get { return hasFlag; } set { hasFlag = value; } }
+    private bool hasFlag;
+
+    public SnowBall Ball { get { return ball; } set { ball = value; } }
+    private SnowBall ball;
+
+
 
     // Start is called before the first frame update
     void Start()
     {
-		InfoHowManyNear.gameObject.SetActive(IsBeginHex);
+		infoHowManyNear.gameObject.SetActive(false);
 	}
 
 	// Update is called once per frame
@@ -35,28 +42,43 @@ public class Hex : MonoBehaviour
 
 	public void Show()
 	{
-		InfoHowManyNear.gameObject.SetActive(true);
+		infoHowManyNear.gameObject.SetActive(true);
+
+		if (ball != null)
+			Destroy(ball.gameObject);
+
+		if (isBroken)
+        {
+			Instantiate(DestroyIceController.Instance.IceFbx, this.transform.position, Quaternion.identity);
+			gameObject.SetActive(false);
+        }
 	}
 
 	public void ResetGame()
     {
-		InfoHowManyNear.gameObject.SetActive(IsBeginHex);
+		infoHowManyNear.gameObject.SetActive(IsBeginHex);
 		howManyNearBroken = 0;
-		IsBroken = false;
+		isBroken = false;
         ResetUIHex();
+
+        if(Ball != null)
+		    Destroy(Ball.gameObject);
 	}
 
     public void ResetUIHex()
     {
-		InfoHowManyNear.text = HowManyNearBroken.ToString();
+		infoHowManyNear.text = howManyNearBroken.ToString();
         if(isBroken)
         {
-            InfoHowManyNear.gameObject.SetActive(false);
-			InfoHowManyNear.color = Color.red;
+            infoHowManyNear.enabled = false;
+            infoHowManyNear.gameObject.SetActive(false);
+			infoHowManyNear.color = Color.red;
 		}
         else
         {
-			InfoHowManyNear.color = Color.white;
+			infoHowManyNear.enabled = true;
+			infoHowManyNear.gameObject.SetActive(false);
+			infoHowManyNear.color = Color.white;
 		}
 	}
 
