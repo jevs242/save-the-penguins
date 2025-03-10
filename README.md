@@ -12,6 +12,6 @@ Open this project in Unity by navigating to the project folder after cloning or 
 
 Enjoy exploring the project!
 
-## Where to play it 
-https://two42studios.itch.io/save-the-penguins
+## Where to play it?
+Itch.io : https://two42studios.itch.io/save-the-penguins
 
